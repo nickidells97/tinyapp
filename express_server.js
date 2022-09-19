@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+
+
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -37,16 +39,22 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase.b2xVn2 };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  let newID = generateRandomString();
+  urlDatabase[newID] = req.body.longURL;
+  res.redirect(`/urls/${newID}`) 
 });
 
 function generateRandomString() {
   const result = Math.random().toString(36).substring(2,8);
   return result;
 }
+
+app.get("/u/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id];
+  res.redirect(longURL);
+});
