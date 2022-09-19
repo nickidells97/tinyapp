@@ -16,6 +16,19 @@
     />
     <title>TinyApp</title>
   </head>
+  <style>
+    .button {
+      border-radius: 7px;
+      border-width: 1px;
+      border-color: red;
+      background-color: white;
+      color: rgb(255, 0, 0);
+      padding: 20x 30px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #ffffff;
+      }
+  </style>
   <body>
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
@@ -25,6 +38,7 @@
           <tr>
             <th scope="col">Short URL ID</th>
             <th scope="col">Long URL</th>
+            <th scope="col">Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -32,6 +46,9 @@
             <tr>
               <td><%= id %></td>
               <td><%= urls[id] %></td>
+              <td><form method="POST" action="/urls/<%= id %>/delete">
+                <button class="button">Delete</button>
+              </form></td>
             </tr>
           <% } %>
         </tbody>
