@@ -10,7 +10,17 @@
     />
     <title>URL - TinyApp Example</title>
   </head>
-
+  <style>
+    .button {
+      border-radius: 7px;
+      border-color: rgb(59, 111, 255);
+      background-color: rgb(59, 111, 255);
+      color: rgb(255, 255, 255);
+      padding: 20x 30px;
+      font-size: 16px;
+      cursor: pointer;
+      }
+  </style>
   <body>
     <%- include('partials/_header') %>
     <div class="card text-center">
@@ -20,6 +30,13 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
+        <hr class="solid">
+        <h5 class="card-text">
+          Edit
+        </h5>
+          <form method="POST" action="/urls/<%= id %>/update">
+          New URL: <input type="text" name = "longURL"></input>  <button class="button">Submit</button>
+        </form>
       </div>
       <div class="card-footer text-muted"></div>
     </div>
