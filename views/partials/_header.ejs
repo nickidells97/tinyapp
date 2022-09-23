@@ -22,13 +22,13 @@
             orientation: right;
           }
         </style>
-          <% if(username){ %>
+          <% if(userObject){ %>
             <form method="POST" action="/logout">
-              <h1><div>Logged in as: <%= username %></div><button type="submit">Logout</button></h1>
+              <h1><div>Logged in as: <%= userObject.email %></div><button type="submit">Logout</button></h1>
             </form>
           <% } else{ %>  
             <form method="POST" action="/login">
-              <h1><input type="text" name = "username"></input><button type="submit">Login</button></h1>
+              <h1><input type="text" name = "email"></input><button type="submit">Login</button></h1>
             </form>
          <% } %>
       </div>

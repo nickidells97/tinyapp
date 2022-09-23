@@ -31,30 +31,37 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+//Create new URL page
+
 app.get("/urls/new", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],
+    userObject: users[req.cookies["user_id"]]
   };
   res.render("urls_new", templateVars);
 });
 
+//My URLs home page
+
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],
+    userObject: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
 });
 
+//URL page by id
+
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"],
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    urls: urlDatabase,
+    userObject: users[req.cookies["user_id"]]
   };
   res.render("urls_show", templateVars);
 });
+
+//Generate random short URL
 
 app.post("/urls", (req, res) => {
   let newID = generateRandomString();
@@ -67,15 +74,21 @@ function generateRandomString() {
   return result;
 }
 
+//Redirect user to longURL path
+
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
 });
 
+// Delete URL feature
+
 app.post("/urls/:id/delete", (req,res) => {
   delete urlDatabase[req.params.id];
   res.redirect(`/urls`);
 });
+
+// update URL feature
 
 app.post("/urls/:id/update", (req,res) => {
   let longURL = req.body.longURL;
@@ -88,12 +101,41 @@ app.post("/urls/:id", (req,res) => {
   res.redirect(`/urls/${req.params.id}`);
 });
 
+//Login/logout functionality on headers.ejs
+
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
+  res.cookie('user_id', generateRandomString());
   res.redirect('/urls');
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', req.body.username);
+  res.clearCookie('user_id', );
+  res.redirect('/urls');
+});
+
+// Registration page
+
+app.get("/register", (req, res) => {
+  const templateVars = {
+    urls: urlDatabase,
+    user_id: req.cookies["user_id"],
+    userObject: users.user_id
+  };
+  res.render("register", templateVars);
+});
+
+//User data
+const users = {};
+
+app.post("/register", (req, res) => {
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  users[id] = {
+    id,
+    email,
+    password
+  }
+  res.cookie('user_id', id)
   res.redirect('/urls');
 });
