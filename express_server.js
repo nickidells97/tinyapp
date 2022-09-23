@@ -109,7 +109,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id', );
+  res.clearCookie('user_id',);
   res.redirect('/urls');
 });
 
@@ -127,7 +127,23 @@ app.get("/register", (req, res) => {
 //User data
 const users = {};
 
+//callback that checks to see if user email exists
+function getUserByEmail(value) {
+  for (const user in users) {
+    console.log(users[user].email);
+    if (users[user].email === value) {
+      return false;
+    }
+  }
+}
+
+//register functionality for users
 app.post("/register", (req, res) => {
+  if (getUserByEmail(req.body.email) === false) {
+    res.status(400);
+    res.send('None shall pass');
+    return;
+  }
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
@@ -135,7 +151,12 @@ app.post("/register", (req, res) => {
     id,
     email,
     password
+  };
+  if (!email || !password) {
+    res.status(400);
+    res.send('None shall pass');
   }
-  res.cookie('user_id', id)
+  res.cookie('user_id', id);
   res.redirect('/urls');
 });
+
