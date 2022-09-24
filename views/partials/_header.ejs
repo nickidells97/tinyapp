@@ -13,12 +13,21 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <% if(!userObject){ %>
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <a class="nav-item nav-link" href="/login">Create New URL</a> 
         <a class="nav-item nav-link" href="/register">Register</a>
         <a class="nav-item nav-link" href="/login">Login</a>
       </div>
+      <% } else if (userObject) { %>
+        <div class="navbar-nav">
+          <a class="nav-item nav-link" href="/urls">My URLs</a>
+          <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+          <a class="nav-item nav-link" href="/urls">Register</a>
+          <a class="nav-item nav-link" href="/urls">Login</a>
+        </div>
+      <% } %>
     </div>
     <% if(userObject){ %>
       <form method="POST" action="/logout">

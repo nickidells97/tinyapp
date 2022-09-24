@@ -64,9 +64,14 @@ app.get("/urls/:id", (req, res) => {
 //Generate random short URL
 
 app.post("/urls", (req, res) => {
-  let newID = generateRandomString();
-  urlDatabase[newID] = req.body.longURL;
-  res.redirect(`/urls/${newID}`);
+  const userObject = users[req.cookies["user_id"]]
+  if (userObject) {
+    let newID = generateRandomString();
+    urlDatabase[newID] = req.body.longURL;
+    res.redirect(`/urls/${newID}`);
+  } else if (!userObject) {
+    res.send('Go away hacker!!')
+  };
 });
 
 function generateRandomString() {
@@ -77,8 +82,12 @@ function generateRandomString() {
 //Redirect user to longURL path
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
-  res.redirect(longURL);
+  if (!urlDatabase[req.params.id]) {
+    res.send('Error: no such URL');
+  } else {
+    const longURL = urlDatabase[req.params.id];
+    res.redirect(longURL);
+  }
 });
 
 // Delete URL feature

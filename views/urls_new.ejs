@@ -23,6 +23,7 @@
 
     <main style="margin: 1em;">
       <h3>Create TinyURL</h3>
+      <% if(userObject) { %> 
       <form class="form-inline" action="/urls" method="POST">
         <div class="form-group mb-2">
           <label for="longURL">Enter a URL:</label>
@@ -36,6 +37,11 @@
           <button type="submit" class="btn btn-primary">Submit</button>
         </div>
       </form>
+      <% } else if (!userObject) { %>
+        <p>
+          Error, you must register to create a short URL!!!!
+        </p>
+      <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script
