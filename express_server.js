@@ -110,12 +110,24 @@ app.get("/login", (req, res) => {
     userObject: users.user_id
   };
   res.render("login", templateVars);
+  console.log(users);
 });
 
 app.post("/login", (req, res) => {
-  res.cookie('user_id', generateRandomString());
-  res.redirect('/urls');
-
+  for (const user in users) {
+    if (users[user].email === req.body.email) 
+    user_id = users[user].id;
+    userObject = users[user];
+    console.log(users[user].id);
+  }
+  if (getUserByEmail(req.body.email) && checkForPasswordMatch(req.body.password) ) {
+    console.log('working');
+    res.cookie('user_id', users[user_id].id);
+    res.redirect('/urls');
+  } else {
+    res.status(403);
+    res.send('Error: wrong email and/or password');
+  }
 });
 
 //Logout functionality 
@@ -143,7 +155,15 @@ const users = {};
 function getUserByEmail(value) {
   for (const user in users) {
     if (users[user].email === value) {
-      return false;
+      return true;
+    }
+  }
+};
+
+function checkForPasswordMatch(value) {
+  for (const user in users) {
+    if (users[user].password === value) {
+      return true;
     }
   }
 };
@@ -152,7 +172,7 @@ function getUserByEmail(value) {
 app.post("/register", (req, res) => {
   if (getUserByEmail(req.body.email) === false) {
     res.status(400);
-    res.send('None shall pass');
+    res.send('User already exists!');
     return;
   }
   const id = generateRandomString();
@@ -165,7 +185,8 @@ app.post("/register", (req, res) => {
   };
   if (!email || !password) {
     res.status(400);
-    res.send('None shall pass');
+    res.send('Please fill out all fields');
+    setTimeout(() => res.redirect('/register'), 500)
   }
   res.cookie('user_id', id);
   res.redirect('/urls');

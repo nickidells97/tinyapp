@@ -18,18 +18,12 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
         <a class="nav-item nav-link" href="/register">Register</a>
         <a class="nav-item nav-link" href="/login">Login</a>
-        <style>
-          input {
-            width: 50%;
-            orientation: right;
-          }
-        </style>
-          <% if(userObject){ %>
-            <form method="POST" action="/logout">
-              <h1><div>Logged in as: <%= userObject.email %></div><button type="submit">Logout</button></h1>
-            </form>
-          <% } %>
       </div>
     </div>
+    <% if(userObject){ %>
+      <form method="POST" action="/logout">
+        <h5 style="text-align: right;" style>Logged in as: <%= userObject.email %>  <button type="submit">Logout</button></h5>
+      </form>
+    <% } %>
   </nav>
 </header>
