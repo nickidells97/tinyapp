@@ -16,6 +16,8 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
+        <a class="nav-item nav-link" href="/login">Login</a>
         <style>
           input {
             width: 50%;
@@ -26,11 +28,7 @@
             <form method="POST" action="/logout">
               <h1><div>Logged in as: <%= userObject.email %></div><button type="submit">Logout</button></h1>
             </form>
-          <% } else{ %>  
-            <form method="POST" action="/login">
-              <h1><input type="text" name = "email"></input><button type="submit">Login</button></h1>
-            </form>
-         <% } %>
+          <% } %>
       </div>
     </div>
   </nav>

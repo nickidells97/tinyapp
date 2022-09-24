@@ -101,12 +101,24 @@ app.post("/urls/:id", (req,res) => {
   res.redirect(`/urls/${req.params.id}`);
 });
 
-//Login/logout functionality on headers.ejs
+//Login Page and Post Functionality
+
+app.get("/login", (req, res) => {
+  const templateVars = {
+    urls: urlDatabase,
+    user_id: req.cookies["user_id"],
+    userObject: users.user_id
+  };
+  res.render("login", templateVars);
+});
 
 app.post("/login", (req, res) => {
   res.cookie('user_id', generateRandomString());
   res.redirect('/urls');
+
 });
+
+//Logout functionality 
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id',);
@@ -130,12 +142,11 @@ const users = {};
 //callback that checks to see if user email exists
 function getUserByEmail(value) {
   for (const user in users) {
-    console.log(users[user].email);
     if (users[user].email === value) {
       return false;
     }
   }
-}
+};
 
 //register functionality for users
 app.post("/register", (req, res) => {
