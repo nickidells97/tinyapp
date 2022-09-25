@@ -8,8 +8,14 @@ const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { 
+    longURL: "http://www.lighthouselabs.ca",
+    userID:"aj48lw"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "aj48lw"
+  },
 };
 
 app.use(express.urlencoded({ extended: true }));
@@ -43,9 +49,11 @@ app.get("/urls/new", (req, res) => {
 
 //My URLs home page
 
-app.get("/urls", (req, res) => {
+app.get("/urls", (req, res) => {  
+  const userid = req.cookies["user_id"]
+  const newUserURLS = urlsForUser(userid);
   const templateVars = {
-    urls: urlDatabase,
+    urls: newUserURLS,
     userObject: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
@@ -54,11 +62,20 @@ app.get("/urls", (req, res) => {
 //URL page by id
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = {
-    urls: urlDatabase,
-    userObject: users[req.cookies["user_id"]]
-  };
-  res.render("urls_show", templateVars);
+  const userid = req.cookies["user_id"]
+  const newUserURLS = urlsForUser(userid);
+  for (const shortURLS in newUserURLS) {
+    if (userid === newUserURLS[shortURLS].userID) {
+      const templateVars = {
+        urls: newUserURLS,
+        userObject: users[req.cookies["user_id"]],
+        id: req.params.id        
+      };
+      res.render("urls_show", templateVars);
+    } else {
+      return res.send('Error: this URL does not belong to you!!')
+    }
+  }
 });
 
 //Generate random short URL
@@ -67,12 +84,17 @@ app.post("/urls", (req, res) => {
   const userObject = users[req.cookies["user_id"]]
   if (userObject) {
     let newID = generateRandomString();
-    urlDatabase[newID] = req.body.longURL;
+    urlDatabase[newID] = {
+      longURL: req.body.longURL,
+      userID: req.cookies["user_id"]
+    }
     res.redirect(`/urls/${newID}`);
   } else if (!userObject) {
     res.send('Go away hacker!!')
   };
 });
+
+
 
 function generateRandomString() {
   const result = Math.random().toString(36).substring(2,8);
@@ -102,12 +124,17 @@ app.post("/urls/:id/delete", (req,res) => {
 app.post("/urls/:id/update", (req,res) => {
   let longURL = req.body.longURL;
   const id = req.params.id;
-  urlDatabase[id] = longURL;
+  urlDatabase[id].longURL = longURL;
   res.redirect(`/urls`);
 });
 
 app.post("/urls/:id", (req,res) => {
-  res.redirect(`/urls/${req.params.id}`);
+  const userObject = req.cookies["user_id"];
+  if (userObject) {
+    res.redirect(`/urls/${req.params.id}`);
+  } else {
+    res.send('You are not logged in or the id does not exist!');
+  }
 });
 
 //Login Page and Post Functionality
@@ -119,7 +146,6 @@ app.get("/login", (req, res) => {
     userObject: users.user_id
   };
   res.render("login", templateVars);
-  console.log(users);
 });
 
 app.post("/login", (req, res) => {
@@ -127,10 +153,8 @@ app.post("/login", (req, res) => {
     if (users[user].email === req.body.email) 
     user_id = users[user].id;
     userObject = users[user];
-    console.log(users[user].id);
   }
   if (getUserByEmail(req.body.email) && checkForPasswordMatch(req.body.password) ) {
-    console.log('working');
     res.cookie('user_id', users[user_id].id);
     res.redirect('/urls');
   } else {
@@ -160,30 +184,13 @@ app.get("/register", (req, res) => {
 //User data
 const users = {};
 
-//callback that checks to see if user email exists
-function getUserByEmail(value) {
-  for (const user in users) {
-    if (users[user].email === value) {
-      return true;
-    }
-  }
-};
-
-function checkForPasswordMatch(value) {
-  for (const user in users) {
-    if (users[user].password === value) {
-      return true;
-    }
-  }
-};
-
 //register functionality for users
 app.post("/register", (req, res) => {
   if (getUserByEmail(req.body.email) === false) {
     res.status(400);
     res.send('User already exists!');
     return;
-  }
+  };
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
@@ -201,3 +208,35 @@ app.post("/register", (req, res) => {
   res.redirect('/urls');
 });
 
+// Callbacks
+
+// Only shows the URLs for the logged in user
+function urlsForUser(id) {
+  const userURLS = {};
+
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userURLS[shortURL] = urlDatabase[shortURL]
+    }
+  }
+  
+  return userURLS;
+};
+
+// Checks for passwords match
+function checkForPasswordMatch(value) {
+  for (const user in users) {
+    if (users[user].password === value) {
+      return true;
+    }
+  }
+};
+
+// checks to see if the emails match 
+function getUserByEmail(value) {
+  for (const user in users) {
+    if (users[user].email === value) {
+      return true;
+    }
+  }
+};

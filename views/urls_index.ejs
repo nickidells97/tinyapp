@@ -42,6 +42,7 @@
   </style>
   <body>
     <%- include('partials/_header') %>
+    <% if (userObject) { %>
     <main style="margin: 1em;">
       <h3>My URLs</h3>
       <table class="table">
@@ -57,14 +58,20 @@
           <% for (let id in urls) { %>
             <tr>
               <td><%= id %></td>
-              <td><%= urls[id] %></td>
+              <td><%= urls[id].longURL %></td>
               <td><form method="POST" action="/urls/<%= id %>">
                 <button class="buttonEdit">Edit</button>
-              </form></td>
+              </form>
+              </td>
               <td><form method="POST" action="/urls/<%= id %>/delete">
                 <button class="buttonDelete">Delete</button>
               </form></td>
             </tr>
+          <% } %>
+          <% } else { %>
+            <p>
+              Please login to view your URLs!
+            </p>
           <% } %>
         </tbody>
       </table>
