@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -194,10 +195,11 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  const hashPassword = bcrypt.hashSync(password, 10)
   users[id] = {
     id,
     email,
-    password
+    password: hashPassword
   };
   if (!email || !password) {
     res.status(400);
@@ -205,6 +207,7 @@ app.post("/register", (req, res) => {
     setTimeout(() => res.redirect('/register'), 500)
   }
   res.cookie('user_id', id);
+  console.log(users);
   res.redirect('/urls');
 });
 
@@ -224,9 +227,9 @@ function urlsForUser(id) {
 };
 
 // Checks for passwords match
-function checkForPasswordMatch(value) {
+function checkForPasswordMatch(loginPassword) {
   for (const user in users) {
-    if (users[user].password === value) {
+    if (bcrypt.compareSync(loginPassword, users[user].password)) {
       return true;
     }
   }
