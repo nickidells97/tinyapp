@@ -59,9 +59,7 @@
             <tr>
               <td><%= id %></td>
               <td><%= urls[id].longURL %></td>
-              <td><form method="POST" action="/urls/<%= id %>">
-                <button class="buttonEdit">Edit</button>
-              </form>
+              <td><a class="buttonEdit" href="/urls/<%= id %>" > Edit </a>
               </td>
               <td><form method="POST" action="/urls/<%= id %>/delete">
                 <button class="buttonDelete">Delete</button>
