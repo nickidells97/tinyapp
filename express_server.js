@@ -65,6 +65,13 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userid = req.session.user_id;
   const newUserURLS = urlsForUser(userid);
+  if (!userid) {
+    return res.send('error: user not found');
+  }
+  const shortURLEntry = urlDatabase[req.params.id];
+  if (userid !== shortURLEntry.userID) {
+    return res.status(401).send('You are not the owner of this URL');
+  }
   for (const shortURLS in newUserURLS) {
     if (userid === newUserURLS[shortURLS].userID) {
       const templateVars = {
@@ -156,6 +163,9 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   let user_id;
   let userObject;
+  if (!req.body.email || !req.body.password) {
+    return res.send('please fill out login information');
+  }
   for (const user in users) {
     if (users[user].email === req.body.email)
       user_id = users[user].id;
